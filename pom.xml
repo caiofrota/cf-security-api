@@ -1,0 +1,203 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.cftechsol</groupId>
+	<artifactId>cf-security-api</artifactId>
+	<version>1.0.0</version>
+	<name>CF Security API</name>
+	<description>An API to secure your applications easily!</description>
+
+	<!-- Properties -->
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<props.compile.jdk.source>1.8</props.compile.jdk.source>
+		<props.compile.jdk.target>1.8</props.compile.jdk.target>
+	</properties>
+
+	<parent>
+		<!-- Spring Boot -->
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>2.0.0.RELEASE</version>
+		<relativePath />
+	</parent>
+
+	<dependencies>
+		<!-- Spring Boot - Web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Spring Boot - Data JPA -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Spring Boot - Security -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Spring Boot - Test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- GSON - Google JSON API -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- JWT -->
+		<dependency>
+			<groupId>io.jsonwebtoken</groupId>
+			<artifactId>jjwt</artifactId>
+			<version>0.7.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Lombok -->
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- CF Tech - Rest API -->
+		<dependency>
+			<groupId>com.cftechsol</groupId>
+			<artifactId>cf-data-api</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- CF Tech - Rest API -->
+		<dependency>
+			<groupId>com.cftechsol</groupId>
+			<artifactId>cf-rest-api</artifactId>
+			<version>1.0.0</version>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Spring - Tests -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- H2 Database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<!-- Developers specification -->
+	<developers>
+		<developer>
+			<id>caiofrota</id>
+			<name>Caio Frota</name>
+			<email>contact@cftechsol.com</email>
+			<organization>CF Technology Solutions</organization>
+			<organizationUrl>https://www.cftechsol.com</organizationUrl>
+			<roles>
+				<role>developer</role>
+			</roles>
+			<timezone>-3</timezone>
+		</developer>
+	</developers>
+
+	<!-- Organization specification -->
+	<organization>
+		<name>CF Technology Solutions</name>
+		<url>https://www.cftechsol.com</url>
+	</organization>
+
+	<!-- Build configurations -->
+	<build>
+		<plugins>
+			<!-- Java build configurations -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>${props.compile.jdk.source}</source>
+					<target>${props.compile.jdk.target}</target>
+					<encoding>${project.build.sourceEncoding}</encoding>
+				</configuration>
+			</plugin>
+			<!-- Jar -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- JavaDoc -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-javadocs</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<!-- Eclipse configuration -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<configuration>
+					<projectNameTemplate>[artifactId]</projectNameTemplate>
+					<additionalProjectnatures>
+						<projectnature>org.maven.ide.eclipse.maven2Nature</projectnature>
+					</additionalProjectnatures>
+					<!-- Set Eclipse project to use Java version specified -->
+					<additionalProjectFacets>
+						<jst.java>
+							${props.compile.jdk.source}
+						</jst.java>
+					</additionalProjectFacets>
+					<!-- Set Eclipse project to UTF-8 -->
+					<additionalConfig>
+						<file>
+							<name>.settings/org.eclipse.core.resources.prefs</name>
+							<content>
+								<![CDATA[eclipse.preferences.version=1${line.separator}encoding/<project>=${project.build.sourceEncoding}${line.separator}]]>
+							</content>
+						</file>
+					</additionalConfig>
+				</configuration>
+			</plugin>
+		</plugins>
+		<!-- Wagon FTP -->
+		<extensions>
+			<extension>
+				<groupId>org.apache.maven.wagon</groupId>
+				<artifactId>wagon-ftp</artifactId>
+				<version>1.0-alpha-6</version>
+			</extension>
+		</extensions>
+	</build>
+
+	<!-- Deploy configurations -->
+	<distributionManagement>
+		<repository>
+			<id>cftechsol</id>
+			<url>ftp://ftp.cftechnologysolutions.com/webapps/maven2</url>
+		</repository>
+	</distributionManagement>
+
+</project>
