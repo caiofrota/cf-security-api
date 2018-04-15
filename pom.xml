@@ -96,6 +96,20 @@
 		</dependency>
 	</dependencies>
 
+	<!-- Repositories -->
+	<repositories>
+		<!-- Lombok -->
+		<repository>
+			<id>projectlombok.org</id>
+			<url>http://projectlombok.org/mavenrepo</url>
+		</repository>
+		<!-- CF Tech -->
+		<repository>
+			<id>cftechsol.com</id>
+			<url>https://maven2.cftechsol.com</url>
+		</repository>
+	</repositories>
+
 	<!-- Developers specification -->
 	<developers>
 		<developer>
