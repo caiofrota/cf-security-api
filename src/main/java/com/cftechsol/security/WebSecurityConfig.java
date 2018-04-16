@@ -26,10 +26,12 @@ import com.cftechsol.security.jwt.JWTLoginFilter;
  * 
  * {@literal <propertie> : <default value>}
  * 
- * cf.security.query.users_by_username : select username, password, enabled from
- * users where username = ? cf.security.query.authorities_by_username : select
- * username, authority from authorities where username = ?
- * cf.security.path.login : /login cf.security.path.secured : /admin
+ * @formatter:off
+ * cf.security.query.users_by_username : select username, password, enabled from users where username = ?
+ * cf.security.query.authorities_by_username : select username, authority from authorities where username = ?
+ * cf.security.path.login : /login
+ * cf.security.path.secured : /admin
+ * @formatter:on
  * 
  * @author Caio Frota {@literal <contact@cftechsol.com>}
  * @version 1.0.0
