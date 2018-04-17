@@ -132,7 +132,6 @@
 		</repository>
 	</repositories>
 
-	<!-- Build configurations -->
 	<build>
 		<plugins>
 			<!-- Java build configurations -->
