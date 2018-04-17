@@ -24,6 +24,7 @@
 		<relativePath />
 	</parent>
 
+	<!-- Dependencies -->
 	<dependencies>
 		<!-- Spring Boot - Web -->
 		<dependency>
@@ -68,7 +69,7 @@
 			<artifactId>lombok</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- CF Tech - Rest API -->
+		<!-- CF Tech - Data API -->
 		<dependency>
 			<groupId>com.cftechsol</groupId>
 			<artifactId>cf-data-api</artifactId>
