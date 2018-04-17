@@ -2,7 +2,7 @@
 
 [![Build](https://img.shields.io/travis/caiofrota/cf-security-api.svg)](#)
 [![Coverage](https://codecov.io/gh/caiofrota/cf-security-api/branch/master/graph/badge.svg)](#)
-[![GitHub issues](https://img.shields.io/github/issues/caiofrota/cf-rest.svg)](https://github.com/caiofrota/cf-security-api/issues)
+[![GitHub issues](https://img.shields.io/github/issues/caiofrota/cf-security-api.svg)](https://github.com/caiofrota/cf-security-api/issues)
 [![Fork](https://img.shields.io/github/forks/caiofrota/cf-security-api.svg)](#)
 [![Stars](https://img.shields.io/github/stars/caiofrota/cf-security-api.svg)](#)
 [![License](https://img.shields.io/github/license/caiofrota/cf-security-api.svg)](#)
