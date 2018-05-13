@@ -37,7 +37,7 @@
 	<distributionManagement>
 		<repository>
 			<id>cftechsol</id>
-			<url>ftp://ftp.cftechnologysolutions.com/webapps/maven2</url>
+			<url>ftp://cftechsol.com/var/maven2</url>
 		</repository>
 	</distributionManagement>
 
