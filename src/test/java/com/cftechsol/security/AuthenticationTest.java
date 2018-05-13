@@ -24,11 +24,13 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-import com.cftechsol.security.examples.entities.ExampleAuthorities;
-import com.cftechsol.security.examples.entities.ExampleUser;
-import com.cftechsol.security.examples.repositories.ExampleAuthoritiesRepository;
-import com.cftechsol.security.examples.repositories.ExampleUsersRepository;
 import com.cftechsol.security.jwt.UserCredentials;
+import com.cftechsol.security.users.User;
+import com.cftechsol.security.users.UserRepository;
+import com.cftechsol.security.views.userauthorities.UserAuthoritiesV;
+import com.cftechsol.security.views.userauthorities.UserAuthoritiesVRepository;
+import com.cftechsol.security.views.usersv.UsersV;
+import com.cftechsol.security.views.usersv.UsersVRepository;
 import com.google.gson.Gson;
 
 import io.jsonwebtoken.Jwts;
@@ -46,10 +48,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 public class AuthenticationTest {
 
 	@Autowired
-	private ExampleUsersRepository userRepository;
+	private UserRepository userRepository;
 
 	@Autowired
-	private ExampleAuthoritiesRepository authoritiesRepository;
+	private UsersVRepository usersvRepository;
+
+	@Autowired
+	private UserAuthoritiesVRepository userAuthoritiesVRepository;
 
 	@Autowired
 	private WebApplicationContext webApplicationContext;
@@ -85,13 +90,15 @@ public class AuthenticationTest {
 
 	@Test
 	public void shouldLogin() throws Exception {
-		userRepository.save(new ExampleUser("user@company.com", passwordEncoder.encode("password"), true));
-		authoritiesRepository.save(new ExampleAuthorities("user@company.com", "ADMIN"));
-		authoritiesRepository.save(new ExampleAuthorities("user@company.com", "TEST"));
+		String password = passwordEncoder.encode("password");
+		userRepository.save(new User("userlogin@company.com", password, "User Login", true, null, null));
+		usersvRepository.save(new UsersV("userlogin@company.com", password, true));
+		userAuthoritiesVRepository.save(new UserAuthoritiesV("userlogin@company.com", "ADMIN"));
+		userAuthoritiesVRepository.save(new UserAuthoritiesV("userlogin@company.com", "TEST"));
 
 		Gson gson = new Gson();
 		UserCredentials user = new UserCredentials();
-		user.setUsername("user@company.com");
+		user.setUsername("userlogin@company.com");
 		user.setPassword("password");
 		// @formatter:off
 		mockMvc.perform(MockMvcRequestBuilders.post("/login")
@@ -105,107 +112,26 @@ public class AuthenticationTest {
 
 	@Test
 	public void requestWithValidTokenToSecuredMethodShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "ADMIN";
-		});
-		String username = "user@company.com";
+		String password = passwordEncoder.encode("password");
+		userRepository.save(new User("requestWithValidTokenToSecuredMethodShouldGetOk@company.com", password,
+				"User Login", true, null, null));
+		usersvRepository
+				.save(new UsersV("requestWithValidTokenToSecuredMethodShouldGetOk@company.com", password, true));
+		userAuthoritiesVRepository
+				.save(new UserAuthoritiesV("requestWithValidTokenToSecuredMethodShouldGetOk@company.com", "ADMIN"));
+		userAuthoritiesVRepository
+				.save(new UserAuthoritiesV("requestWithValidTokenToSecuredMethodShouldGetOk@company.com", "TEST"));
+
+		String username = "requestWithValidTokenToSecuredMethodShouldGetOk@company.com";
 		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
+		String token = Jwts.builder().setSubject(username)
 				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
 				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/test")
+		mockMvc.perform(MockMvcRequestBuilders.get("/admin/users")
 						.contentType(MediaType.APPLICATION_JSON)
 						.header("Origin", "*")
 						.header("Authorization", "Bearer " + token))
 				.andExpect(MockMvcResultMatchers.status().isOk());
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/allRoles")
-					.contentType(MediaType.APPLICATION_JSON)
-					.header("Origin", "*")
-					.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestWithRightRoleToRoleBasedMethodShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "TEST_ROLE";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/test")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestWithWrongRoleToRoleBasedMethodShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "OTHER_ROLE";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/test")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestWithAllRolesToAllRoleBasedMethodShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "ONE_ROLE";
-		});
-		authorities.add(() -> {
-			return "TEST_ROLE";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/allRoles")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestWithWrongRolesToAllRoleBasedMethodShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "ONE_ROLE";
-		});
-		authorities.add(() -> {
-			return "OTHER_ROLE";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/allRoles")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
 		// @formatter:on
 	}
 
@@ -260,186 +186,6 @@ public class AuthenticationTest {
 						.header("Origin", "*")
 						.header("Authorization", "Bearer asd"))
 				.andExpect(MockMvcResultMatchers.status().isInternalServerError());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredFindAllWithRoleShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_FIND_ALL";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredFindAllWithoutRoleShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_FIND_ALL_WRONG";
-		});
-		String username = "user@company.com";
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredFindByIdWithRoleShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_FIND_BY_ID";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-		user.setId(1l);
-		userRepository.save(user);
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/id/1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredFindByIdWithoutRoleShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_FIND_BY_ID_WRONG";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-		user.setId(1l);
-		userRepository.save(user);
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example/id/1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredSaveWithRoleShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_SAVE";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.post("/admin/example")
-						.contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token)
-						.content(new Gson().toJson(user)))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredSaveWithoutRoleShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_SAVE_WRONG";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.post("/admin/example")
-						.contentType(MediaType.APPLICATION_JSON_VALUE)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token)
-						.content(new Gson().toJson(user)))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredDeleteWithRoleShouldGetOk() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_DELETE";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-		user.setId(1l);
-		userRepository.save(user);
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.delete("/admin/example?id=1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isOk());
-		// @formatter:on
-	}
-
-	@Test
-	public void requestSecuredDeleteWithoutRoleShouldGetForbidden() throws Exception {
-		List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();
-		authorities.add(() -> {
-			return "EXAMPLE_DELETE_WRONG";
-		});
-		String username = "user@company.com";
-
-		ExampleUser user = new ExampleUser();
-		user.setId(1l);
-		userRepository.save(user);
-
-		// @formatter:off
-		String token = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + expirationTime))
-				.signWith(SignatureAlgorithm.HS512, secret).compact();
-		mockMvc.perform(MockMvcRequestBuilders.get("/admin/example?id=1")
-						.contentType(MediaType.APPLICATION_JSON)
-						.header("Origin", "*")
-						.header("Authorization", "Bearer " + token))
-				.andExpect(MockMvcResultMatchers.status().isForbidden());
 		// @formatter:on
 	}
 

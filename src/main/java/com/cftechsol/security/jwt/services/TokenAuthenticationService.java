@@ -1,20 +1,25 @@
 package com.cftechsol.security.jwt.services;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
-import java.util.LinkedHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.stereotype.Service;
+
+import com.cftechsol.security.tokens.Token;
+import com.cftechsol.security.tokens.TokenService;
+import com.cftechsol.security.users.User;
+import com.cftechsol.security.users.UserService;
+import com.cftechsol.security.views.userauthorities.UserAuthoritesVService;
+import com.cftechsol.security.views.userauthorities.UserAuthoritiesV;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -39,40 +44,64 @@ public class TokenAuthenticationService {
 	private static long expirationTime;
 	private static String secret;
 
-	public static void addAuthentication(HttpServletResponse res, String username,
-			Collection<? extends GrantedAuthority> authorities) throws IOException {
-		String authoritiesString = null;
-		for (GrantedAuthority authority : authorities) {
-			if (authoritiesString == null) {
-				authoritiesString = "";
-			} else {
-				authoritiesString += ",";
-			}
-			authoritiesString += authority.getAuthority();
-		}
-		String JWT = Jwts.builder().claim("authorities", authorities).setSubject(username)
-				.setExpiration(new Date(System.currentTimeMillis() + TokenAuthenticationService.expirationTime))
-				.signWith(SignatureAlgorithm.HS512, TokenAuthenticationService.secret).compact();
+	private static TokenService tokenService;
+	private static UserService userService;
 
-		String token = TokenAuthenticationService.TOKEN_PREFIX + " " + JWT;
-		res.addHeader(TokenAuthenticationService.HEADER_STRING, token);
-		res.getOutputStream().print(token);
+	private static UserAuthoritesVService userAuthoritiesVService;
+
+	public static void addAuthentication(HttpServletResponse res, String username) throws IOException {
+		try {
+			String JWT = Jwts.builder().setSubject(username)
+					.setExpiration(new Date(System.currentTimeMillis() + TokenAuthenticationService.expirationTime))
+					.signWith(SignatureAlgorithm.HS512, TokenAuthenticationService.secret).compact();
+
+			String JWTRefresh = Jwts.builder().setSubject(username)
+					.setExpiration(new Date(System.currentTimeMillis() + (int) (Math.random() * 10000 + 1000)))
+					.signWith(SignatureAlgorithm.HS512, TokenAuthenticationService.secret).compact();
+
+			User user = userService.findByEmail(username);
+
+			if (user != null) {
+				System.out.println(user.getId() + " : " + JWT);
+				Token token = new Token(JWT, user, JWTRefresh);
+				tokenService.save(token);
+				
+				String authorities = null;
+				for (UserAuthoritiesV userAuthority : userAuthoritiesVService.findByUsername(user.getEmail())) {
+					if (authorities == null) {
+						authorities = "";
+					} else {
+						authorities += ",";
+					}
+					authorities += "\"" + userAuthority.getId().getAuthorities() + "\"";
+				}
+
+				String tokenStr = TokenAuthenticationService.TOKEN_PREFIX + " " + token.getToken();
+				res.addHeader(TokenAuthenticationService.HEADER_STRING, tokenStr);
+				res.setContentType(MediaType.APPLICATION_JSON_VALUE);
+				res.getOutputStream().print("{\"token\": \"" + token.getToken() + "\", \"tokenRefresh\": \""
+						+ token.getTokenRefresh() + "\", \"permissions\": [" + authorities + "]}");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Authentication getByToken(String token) {
-		Claims claims = Jwts.parser().setSigningKey(TokenAuthenticationService.secret)
-				.parseClaimsJws(token.replace(TokenAuthenticationService.TOKEN_PREFIX, "")).getBody();
+	public static Authentication getByToken(String tokenStr) {
+		tokenStr = tokenStr.replace(TokenAuthenticationService.TOKEN_PREFIX, "").trim();
+
+		Claims claims = Jwts.parser().setSigningKey(TokenAuthenticationService.secret).parseClaimsJws(tokenStr)
+				.getBody();
 		String user = claims.getSubject();
-		ArrayList<LinkedHashMap<?, ?>> authoritiesList = (ArrayList<LinkedHashMap<?, ?>>) claims.get("authorities");
+
 		String authorities = null;
-		for (LinkedHashMap<?, ?> authority : authoritiesList) {
+		for (UserAuthoritiesV userAuthority : userAuthoritiesVService.findByUsername(user)) {
 			if (authorities == null) {
 				authorities = "";
 			} else {
 				authorities += ",";
 			}
-			authorities += (String) authority.get("authority");
+			authorities += (String) userAuthority.getId().getAuthorities();
 		}
 		// @formatter:off
 		return user != null
@@ -98,6 +127,21 @@ public class TokenAuthenticationService {
 	@Value("${cf.rest.jwt.secret:" + TokenAuthenticationService.DEF_SECRET + "}")
 	public void setSecret(String secret) {
 		TokenAuthenticationService.secret = secret;
+	}
+
+	@Autowired
+	public void setTokenService(TokenService tokenService) {
+		TokenAuthenticationService.tokenService = tokenService;
+	}
+
+	@Autowired
+	public void setUserService(UserService userService) {
+		TokenAuthenticationService.userService = userService;
+	}
+
+	@Autowired
+	public void setUserAuthoritiesVService(UserAuthoritesVService userAuthoritiesVService) {
+		TokenAuthenticationService.userAuthoritiesVService = userAuthoritiesVService;
 	}
 
 }
