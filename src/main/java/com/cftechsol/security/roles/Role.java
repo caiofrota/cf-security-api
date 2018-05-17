@@ -14,7 +14,8 @@ import javax.validation.constraints.NotNull;
 import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.rolepermissions.RolePermission;
 import com.cftechsol.security.userroles.UserRole;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +35,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cf_roles", uniqueConstraints = @UniqueConstraint(columnNames = "cod", name = "cf_roles_u1"))
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class Role extends GenericAuditEntity<Long> {
 
 	private static final long serialVersionUID = 8074166695491840656L;
@@ -43,11 +45,9 @@ public class Role extends GenericAuditEntity<Long> {
 	private String cod;
 
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "role-permissions")
 	private List<RolePermission> permissions = new ArrayList<>();
 
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference(value = "role-users")
 	private List<UserRole> users = new ArrayList<>();
 
 }

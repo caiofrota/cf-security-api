@@ -15,6 +15,8 @@ import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.permissions.Permission;
 import com.cftechsol.security.roles.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,6 +36,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cf_role_permissions")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class RolePermission extends GenericAuditEntity<RolePermissionPK> {
 	
 	private static final long serialVersionUID = 2267456055927509651L;
@@ -44,7 +47,6 @@ public class RolePermission extends GenericAuditEntity<RolePermissionPK> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("roleId")
 	@JoinColumn(foreignKey = @ForeignKey(name = "cf_role_permissions_fk1"))
-	@JsonBackReference(value = "role-permissions")
 	private Role role;
 	
 	@ManyToOne(fetch = FetchType.LAZY)

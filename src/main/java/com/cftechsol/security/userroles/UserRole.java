@@ -12,7 +12,8 @@ import javax.persistence.Table;
 import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.roles.Role;
 import com.cftechsol.security.users.User;
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "cf_user_roles")
+@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class UserRole extends GenericAuditEntity<UserRolePK> {
 	
 	private static final long serialVersionUID = -3247384486820416078L;
@@ -40,13 +42,11 @@ public class UserRole extends GenericAuditEntity<UserRolePK> {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("userId")
 	@JoinColumn(foreignKey = @ForeignKey(name = "cf_user_roles_fk1"))
-	@JsonBackReference(value = "user-roles")
 	private User user;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@MapsId("roleId")
 	@JoinColumn(foreignKey = @ForeignKey(name = "cf_user_roles_fk2"))
-	@JsonBackReference(value = "role-users")
 	private Role role;
 	
 	public UserRole(User user, Role role) {

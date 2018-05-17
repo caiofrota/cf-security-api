@@ -17,7 +17,6 @@ import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.tokens.Token;
 import com.cftechsol.security.userroles.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -60,7 +59,6 @@ public class User extends GenericAuditEntity<Long> {
 	private boolean enabled;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-	@JsonManagedReference(value = "user-roles")
 	private List<UserRole> roles = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)

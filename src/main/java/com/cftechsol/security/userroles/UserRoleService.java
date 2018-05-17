@@ -1,5 +1,7 @@
 package com.cftechsol.security.userroles;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.cftechsol.security.services.SecurityService;
@@ -14,4 +16,8 @@ import com.cftechsol.security.services.SecurityService;
 @Service
 public class UserRoleService extends SecurityService<UserRoleRepository, UserRole, UserRolePK> {
 
+	public List<UserRole> findByUserId(Long userId) {
+		return this.repository.findByUserId(userId);
+	};
+	
 }
