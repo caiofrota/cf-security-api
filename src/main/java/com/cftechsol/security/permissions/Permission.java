@@ -15,7 +15,6 @@ import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.rolepermissions.RolePermission;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +30,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "cf_permissions", uniqueConstraints = @UniqueConstraint(columnNames = "cod", name = "cf_permissions_u1"))
 public class Permission extends GenericAuditEntity<Long> {
 
@@ -40,9 +38,21 @@ public class Permission extends GenericAuditEntity<Long> {
 	@Column
 	@NotNull
 	private String cod;
+	
+	@Column(insertable = false, updatable = false)
+	private boolean superadmin;
 
 	@OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference(value = "permission-roles")
+	@JsonManagedReference(value = "permission")
 	private List<RolePermission> roles = new ArrayList<>();
-
+	
+	public Permission(String cod, List<RolePermission> roles) {
+		setCod(cod);
+		setRoles(roles);
+	}
+	
+	public Permission(String cod) {
+		this(cod, null);
+	}
+	
 }

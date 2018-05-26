@@ -2,10 +2,11 @@ package com.cftechsol.security.permissions;
 
 import java.util.List;
 
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
+import com.cftechsol.data.services.GenericService;
 import com.cftechsol.rest.exceptions.NonUniqueException;
-import com.cftechsol.security.services.SecurityService;
 
 /**
  * Permission service.
@@ -15,7 +16,7 @@ import com.cftechsol.security.services.SecurityService;
  * @since 1.0.0
  */
 @Service
-public class PermissionService extends SecurityService<PermissionRepository, Permission, Long> {
+public class PermissionService extends GenericService<PermissionRepository, Permission, Long> {
 
 	private Permission prepare(Permission object) throws Exception {
 		if (this.repository.findByCod(object.getCod()) != null) {
@@ -25,35 +26,53 @@ public class PermissionService extends SecurityService<PermissionRepository, Per
 		return object;
 	}
 
-	@Override
-	public List<Permission> findAll() {
-		return this.repository.findByIdGreaterThan(1l);
+	public List<Permission> findAllWithSuperadmin() {
+		return super.repository.findAllWithSuperadmin();
 	}
-	
-	/**
-	 * Save a role.
-	 * 
-	 * @param object
-	 *            Role to save.
-	 * @return Object saved.
-	 * @throws Exception
-	 */
+
+	public Permission findByIdWithSuperadmin(Long id) {
+		return super.repository.findByIdWithSuperadmin(id).get();
+	}
+
+	public Permission findByCod(String email) {
+		return super.repository.findByCod(email);
+	}
+
+	public Permission findByCodWithSuperadmin(String email) {
+		return super.repository.findByCodWithSuperadmin(email);
+	}
+
 	public Permission save(Permission object) throws Exception {
+		if (object != null && object.getId() != null) {
+			Permission user = this.findByIdWithSuperadmin(object.getId());
+			if (user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
 		object = prepare(object);
 		return super.save(object);
 	}
 
-	/**
-	 * Save a role.
-	 * 
-	 * @param object
-	 *            Role to save.
-	 * @return Object saved.
-	 * @throws Exception
-	 */
 	public Permission save(Permission object, long id) throws Exception {
+		if (object != null && object.getId() != null) {
+			Permission user = this.findByIdWithSuperadmin(object.getId());
+			if (user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
 		object = prepare(object);
 		return super.save(object, id);
+	}
+
+	@Override
+	public void delete(Long object) throws Exception {
+		if (object != null) {
+			Permission user = this.findByIdWithSuperadmin(object);
+			if (user != null && user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
+		super.delete(object);
 	}
 
 }

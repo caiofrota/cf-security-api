@@ -59,7 +59,7 @@ public class TokenAuthenticationService {
 					.setExpiration(new Date(System.currentTimeMillis() + (int) (Math.random() * 10000 + 1000)))
 					.signWith(SignatureAlgorithm.HS512, TokenAuthenticationService.secret).compact();
 
-			User user = userService.findByEmail(username);
+			User user = userService.findByEmailWithSuperadmin(username);
 
 			if (user != null) {
 				System.out.println(user.getId() + " : " + JWT);

@@ -1,5 +1,6 @@
 package com.cftechsol.security.userroles;
 
+import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,8 +13,9 @@ import javax.persistence.Table;
 import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.roles.Role;
 import com.cftechsol.security.users.User;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,28 +33,60 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @Table(name = "cf_user_roles")
-@JsonIdentityInfo(generator=ObjectIdGenerators.PropertyGenerator.class, property="id")
 public class UserRole extends GenericAuditEntity<UserRolePK> {
-	
+
 	private static final long serialVersionUID = -3247384486820416078L;
 
 	@EmbeddedId
 	private UserRolePK id;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(insertable = false, updatable = false)
+	private boolean superadmin;
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@MapsId("userId")
 	@JoinColumn(foreignKey = @ForeignKey(name = "cf_user_roles_fk1"))
+	@JsonBackReference(value = "user")
 	private User user;
-	
-	@ManyToOne(fetch = FetchType.EAGER)
+
+	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@MapsId("roleId")
 	@JoinColumn(foreignKey = @ForeignKey(name = "cf_user_roles_fk2"))
+	@JsonBackReference(value = "role")
 	private Role role;
-	
+
 	public UserRole(User user, Role role) {
 		setUser(user);
 		setRole(role);
 		setId(new UserRolePK(user.getId(), role.getId()));
 	}
 	
+	public void setId(UserRolePK id) {
+		this.id = id;
+		this.setUser(new User());
+		this.setRole(new Role());
+		this.getUser().setId(id.getUserId());
+		this.getRole().setId(id.getRoleId());
+	}
+
+	@JsonIgnore
+	public User getUser() {
+		return this.user;
+	}
+
+	@JsonProperty
+	public void setUser(User user) {
+		this.user = user;
+	}
+
+	@JsonIgnore
+	public Role getRole() {
+		return this.role;
+	}
+
+	@JsonProperty
+	public void setRole(Role role) {
+		this.role = role;
+	}
+
 }

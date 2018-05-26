@@ -4,11 +4,12 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.cftechsol.data.services.GenericService;
 import com.cftechsol.rest.exceptions.NonUniqueException;
-import com.cftechsol.security.services.SecurityService;
 
 /**
  * User service.
@@ -18,19 +19,14 @@ import com.cftechsol.security.services.SecurityService;
  * @since 1.0.0
  */
 @Service
-public class UserService extends SecurityService<UserRepository, User, Long> {
+public class UserService extends GenericService<UserRepository, User, Long> {
 
 	@Autowired
 	@Lazy
 	private PasswordEncoder passwordEncoder;
 
-	@Override
-	public List<User> findAll() {
-		return this.repository.findByIdGreaterThan(1l);
-	}
-
 	private User prepare(User object) throws Exception {
-		User user = this.repository.findByEmail(object.getEmail());
+		User user = super.repository.findByEmail(object.getEmail());
 		if (user != null && user.getId() != object.getId()) {
 			throw new NonUniqueException(object.getClass().getSimpleName(), new String[] { "email" },
 					new String[] { object.getEmail() });
@@ -43,35 +39,56 @@ public class UserService extends SecurityService<UserRepository, User, Long> {
 		}
 		return object;
 	}
-
-	public User findByEmail(String email) {
-		return this.repository.findByEmail(email);
+	
+	public List<User> findAllWithSuperadmin() {
+		return super.repository.findAllWithSuperadmin();
 	}
 
-	/**
-	 * Save an user.
-	 * 
-	 * @param object
-	 *            User to save.
-	 * @return Object saved.
-	 * @throws Exception
-	 */
+	public User findByIdWithSuperadmin(Long id) {
+		return super.repository.findByIdWithSuperadmin(id).get();
+	}
+
+	public User findByEmail(String email) {
+		return super.repository.findByEmail(email);
+	}
+
+	public User findByEmailWithSuperadmin(String email) {
+		return super.repository.findByEmailWithSuperadmin(email);
+	}
+
+	@Override
 	public User save(User object) throws Exception {
+		if (object != null && object.getId() != null) {
+			User user = this.findByIdWithSuperadmin(object.getId());
+			if (user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
 		object = prepare(object);
 		return super.save(object);
 	}
 
-	/**
-	 * Save an user.
-	 * 
-	 * @param object
-	 *            User to save.
-	 * @return Object saved.
-	 * @throws Exception
-	 */
+	@Override
 	public User save(User object, long id) throws Exception {
+		if (object != null && object.getId() != null) {
+			User user = this.findByIdWithSuperadmin(object.getId());
+			if (user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
 		object = prepare(object);
 		return super.save(object, id);
+	}
+
+	@Override
+	public void delete(Long object) throws Exception {
+		if (object != null) {
+			User user = this.findByIdWithSuperadmin(object);
+			if (user != null && user.isSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
+		super.delete(object);
 	}
 
 }

@@ -18,7 +18,7 @@ import com.cftechsol.security.controllers.GenericSecuredController;
 public class RoleController extends GenericSecuredController<RoleService, Role, Long> {
 
 	public RoleController() {
-		super("ROLES");
+		super("ROLES", "ADMIN");
 	}
 
 }

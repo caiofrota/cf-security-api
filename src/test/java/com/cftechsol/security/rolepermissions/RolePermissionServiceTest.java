@@ -56,7 +56,7 @@ public class RolePermissionServiceTest {
 		RolePermission example = new RolePermission(new Role("TEST_ROLE_PERMISSION_AUDIT", null, null),
 				new Permission("TEST_ROLE_PERMISSION_AUDIT", null));
 		example.getRole().setId(1l);
-		service.delete(example);
+		service.delete(example.getId());
 	}
 
 }

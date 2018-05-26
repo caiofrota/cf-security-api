@@ -6,6 +6,7 @@ create table cf_role_permissions (
   updated_on    datetime,
   permission_id bigint    not null,
   role_id       bigint    not null,
+  superadmin bit          not null default 0,
   primary key (permission_id, role_id)
 )
 engine=MyISAM

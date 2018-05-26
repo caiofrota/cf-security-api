@@ -56,7 +56,7 @@ public class RoleServiceTest {
 	public void cantDeleteSuperadmin() throws Exception {
 		Role object = new Role("SUPERADMIN", null, null);
 		object.setId(1l);
-		service.delete(object);
+		service.delete(object.getId());
 	}
 
 }

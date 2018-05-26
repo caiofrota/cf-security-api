@@ -56,7 +56,7 @@ public class PermissionServiceTest {
 	public void cantDeleteSuperadmin() throws Exception {
 		Permission object = new Permission("SUPERADMIN", null);
 		object.setId(1l);
-		service.delete(object);
+		service.delete(object.getId());
 	}
 	
 }

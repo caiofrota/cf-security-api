@@ -82,7 +82,7 @@ public class UserServiceTest {
 	public void cantDeleteSuperadmin() throws Exception {
 		User object = new User("cantUpdateSuperadminUser@company.com", "Password", "User Name", true, null, null);
 		object.setId(1l);
-		service.delete(object);
+		service.delete(object.getId());
 	}
 
 }

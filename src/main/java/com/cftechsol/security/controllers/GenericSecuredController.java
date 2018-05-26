@@ -77,7 +77,7 @@ public class GenericSecuredController<S extends GenericService<? extends JpaRepo
 		this.roles.add(prefix + "_SAVE");
 		hasAnyRole(roles.stream().toArray(String[]::new));
 		String username = (String) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		User user = this.userService.findByEmail(username);
+		User user = this.userService.findByEmailWithSuperadmin(username);
 		if (audit) {
 			return this.service.save(object, user.getId());
 		} else {
@@ -86,7 +86,7 @@ public class GenericSecuredController<S extends GenericService<? extends JpaRepo
 	}
 
 	@Override
-	public void delete(@RequestBody E object) throws Exception {
+	public void delete(@RequestBody PK object) throws Exception {
 		this.roles.add(prefix + "_DELETE");
 		hasAnyRole(roles.stream().toArray(String[]::new));
 		super.delete(object);

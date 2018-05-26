@@ -17,9 +17,9 @@ import com.cftechsol.data.entities.GenericAuditEntity;
 import com.cftechsol.security.tokens.Token;
 import com.cftechsol.security.userroles.UserRole;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +35,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Table(name = "cf_users", uniqueConstraints = @UniqueConstraint(columnNames = "email", name = "cf_users_u1"))
 public class User extends GenericAuditEntity<Long> {
 
@@ -58,7 +57,11 @@ public class User extends GenericAuditEntity<Long> {
 	@NotNull
 	private boolean enabled;
 
+	@Column(insertable = false, updatable = false)
+	private boolean superadmin;
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+	@JsonManagedReference(value = "user")
 	private List<UserRole> roles = new ArrayList<>();
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
@@ -73,6 +76,19 @@ public class User extends GenericAuditEntity<Long> {
 	@JsonProperty
 	public void setPassword(String password) {
 		this.password = password;
+	}
+	
+	public User(String email, String password, String name, boolean enabled, List<UserRole> roles, List<Token> tokens) {
+		this.setEmail(email);
+		this.setPassword(password);
+		this.setName(name);
+		this.setEnabled(enabled);
+		this.setRoles(roles);
+		this.setTokens(tokens);
+	}
+	
+	public User(String email, String password, String name, boolean enabled) {
+		this(email, password, name, enabled, null, null);
 	}
 
 }

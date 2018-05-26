@@ -51,7 +51,7 @@ public class UserRoleServiceTest {
 	public void cantDeleteSuperadmin() throws Exception {
 		UserRole object = new UserRole(new User("userRoleService@company.com", "", "", true, null, null), new Role("TEST_ROLE_PERMISSION", null, null));
 		object.getUser().setId(1l);
-		service.delete(object);
+		service.delete(object.getId());
 	}
 
 }

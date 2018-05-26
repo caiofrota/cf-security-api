@@ -6,6 +6,7 @@ create table cf_roles (
   updated_by bigint,
   updated_on datetime,
   cod        varchar(255) not null,
+  superadmin bit          not null default 0,
   primary key (id)
 )
 engine=MyISAM

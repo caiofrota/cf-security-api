@@ -38,8 +38,8 @@ public class TokenController {
 		try {
 			Token found = this.tokenService.findByTokenRefresh(token.getTokenRefresh());
 			if (found != null) {
-				User user = this.userService.findById(found.getUserId());
-				this.tokenService.delete(found);
+				User user = this.userService.findByIdWithSuperadmin(found.getUserId());
+				this.tokenService.delete(found.getToken());
 				TokenAuthenticationService.addAuthentication(response, user.getEmail());
 			} else {
 				response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");

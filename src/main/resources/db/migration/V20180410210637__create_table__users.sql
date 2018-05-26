@@ -7,6 +7,7 @@ create table cf_users (
   updated_on datetime,
   email      varchar(255) not null,
   enabled    bit          not null,
+  superadmin bit          not null default 0,
   name       varchar(255) not null,
   password   varchar(255) not null,
   primary key (id)
