@@ -1,16 +1,17 @@
 package com.cftechsol.security.userroles;
 
-import javax.validation.ConstraintViolationException;
-
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cftechsol.security.roles.Role;
+import com.cftechsol.security.roles.RoleService;
 import com.cftechsol.security.users.User;
+import com.cftechsol.security.users.UserService;
 
 /**
  * Role service test class.
@@ -22,36 +23,38 @@ import com.cftechsol.security.users.User;
 @RunWith(SpringRunner.class)
 @SpringBootTest
 public class UserRoleServiceTest {
-
+	
 	@Autowired
 	private UserRoleService service;
 	
-	@Test(expected = ConstraintViolationException.class)
-	public void PKShouldBeUnique() throws Exception {
-		UserRole example = new UserRole(new User("userRoleService@company.com", "", "", true, null, null), new Role("TEST_ROLE_PERMISSION", null, null));
-		service.save(example);
-		service.save(example);
-	}
-
-	@Test(expected = ConstraintViolationException.class)
-	public void PKShouldBeUniqueOnSaveAudit() throws Exception {
-		UserRole example = new UserRole(new User("userRoleServiceAudit@company.com", "", "", true, null, null), new Role("TEST_ROLE_PERMISSION_AUDIT", null, null));
-		service.save(example, 1l);
-		service.save(example, 1l);
-	}
-
-	@Test
+	@Autowired
+	private RoleService roleService;
+	
+	@Autowired
+	private UserService userService;
+	
+	@Test(expected = AccessDeniedException.class)
 	public void cantUpdateSuperadmin() throws Exception {
-		UserRole example = new UserRole(new User("superadmin@company.com", "", "", true, null, null), new Role("SUPERADMIN", null, null));
-		example.getUser().setId(1l);
+		User user = new User("cantUpdateSuperadmin@company.com", "", "", true, null, null);
+		Role role = new Role("USERROLE_CANT_UPDATE_SUPERADMIN", null, null);
+		userService.save(user);
+		roleService.save(role);
+		UserRole example = new UserRole(user, role);
+		example.setSuperadmin(true);
+		service.save(example);
 		Assert.assertNull(service.save(example));
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantDeleteSuperadmin() throws Exception {
-		UserRole object = new UserRole(new User("userRoleService@company.com", "", "", true, null, null), new Role("TEST_ROLE_PERMISSION", null, null));
-		object.getUser().setId(1l);
-		service.delete(object.getId());
+		User user = new User("cantDeleteSuperadmin@company.com", "", "", true, null, null);
+		Role role = new Role("USERROLE_CANT_DELETE_SUPERADMIN", null, null);
+		userService.save(user);
+		roleService.save(role);
+		UserRole example = new UserRole(user, role);
+		example.setSuperadmin(true);
+		example = service.save(example);
+		service.delete(example.getId());
 	}
 
 }

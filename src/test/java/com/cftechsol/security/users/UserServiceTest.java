@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cftechsol.rest.exceptions.NonUniqueException;
@@ -67,21 +68,23 @@ public class UserServiceTest {
 	public void emailShouldBeUnique() throws Exception {
 		User example = new User("emailShouldBeUnique@company.com", "Password", "User Name", true, null, null);
 		service.save(example);
-		example.setId(200l);
+		example.setId(null);
 		service.save(example);
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantUpdateSuperadmin() throws Exception {
 		User example = new User("cantUpdateSuperadminUser@company.com", "Password", "User Name", true, null, null);
-		example.setId(1l);
+		example.setSuperadmin(true);
+		this.service.save(example);
 		Assert.assertNull(service.save(example));
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantDeleteSuperadmin() throws Exception {
-		User object = new User("cantUpdateSuperadminUser@company.com", "Password", "User Name", true, null, null);
-		object.setId(1l);
+		User object = new User("cantDeleteSuperadminUser@company.com", "Password", "User Name", true, null, null);
+		object.setSuperadmin(true);
+		object = this.service.save(object);
 		service.delete(object.getId());
 	}
 

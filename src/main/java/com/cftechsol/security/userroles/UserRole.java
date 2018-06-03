@@ -1,5 +1,7 @@
 package com.cftechsol.security.userroles;
 
+import java.util.Objects;
+
 import javax.persistence.Column;
 import javax.persistence.EmbeddedId;
 import javax.persistence.Entity;
@@ -11,6 +13,7 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.cftechsol.data.entities.GenericAuditEntity;
+import com.cftechsol.security.permissions.Permission;
 import com.cftechsol.security.roles.Role;
 import com.cftechsol.security.users.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
@@ -40,8 +43,8 @@ public class UserRole extends GenericAuditEntity<UserRolePK> {
 	@EmbeddedId
 	private UserRolePK id;
 	
-	@Column(insertable = false, updatable = false)
-	private boolean superadmin;
+	@Column(updatable = false)
+	private Boolean superadmin = false;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@MapsId("userId")
@@ -58,7 +61,7 @@ public class UserRole extends GenericAuditEntity<UserRolePK> {
 	public UserRole(User user, Role role) {
 		setUser(user);
 		setRole(role);
-		setId(new UserRolePK(user.getId(), role.getId()));
+		this.id = new UserRolePK(user.getId(), role.getId());
 	}
 	
 	public void setId(UserRolePK id) {
@@ -87,6 +90,21 @@ public class UserRole extends GenericAuditEntity<UserRolePK> {
 	@JsonProperty
 	public void setRole(Role role) {
 		this.role = role;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+
+		if (o == null || this.getClass() != o.getClass())
+			return false;
+
+		UserRole that = (UserRole) o;
+		// @formatter:off
+		return super.equals(o) &&
+				Objects.equals(this.getUser(), that.getUser()) &&
+				Objects.equals(this.getRole(), that.getRole());
 	}
 
 }

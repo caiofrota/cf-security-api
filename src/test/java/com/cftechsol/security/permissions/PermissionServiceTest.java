@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cftechsol.rest.exceptions.NonUniqueException;
@@ -33,29 +34,31 @@ public class PermissionServiceTest {
 
 	@Test(expected = NonUniqueException.class)
 	public void codShouldBeUnique() throws Exception {
-		Permission example = new Permission("ADMIN", null);
+		Permission example = new Permission("PERMISSION_UNIQUE", null);
 		service.save(example);
 		service.save(example);
 	}
 
 	@Test(expected = NonUniqueException.class)
 	public void codShouldBeUniqueOnSaveAudit() throws Exception {
-		Permission example = new Permission("ADMIN_AUDIT", null);
+		Permission example = new Permission("PERMISSION_UNIQUE_AUDIT", null);
 		service.save(example, 1l);
 		service.save(example, 1l);
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantUpdateSuperadmin() throws Exception {
-		Permission example = new Permission("SUPERADMIN", null);
-		example.setId(1l);
+		Permission example = new Permission("PERMISSION_CANT_UPDATE_SUPERADMIN", null);
+		example.setSuperadmin(true);
+		service.save(example);
 		Assert.assertNull(service.save(example));
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantDeleteSuperadmin() throws Exception {
-		Permission object = new Permission("SUPERADMIN", null);
-		object.setId(1l);
+		Permission object = new Permission("PERMISSION_CANT_DELETE_SUPERADMIN", null);
+		object.setSuperadmin(true);
+		object = this.service.save(object);
 		service.delete(object.getId());
 	}
 	

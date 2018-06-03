@@ -39,8 +39,8 @@ public class Permission extends GenericAuditEntity<Long> {
 	@NotNull
 	private String cod;
 	
-	@Column(insertable = false, updatable = false)
-	private boolean superadmin;
+	@Column(updatable = false)
+	private Boolean superadmin = false;
 
 	@OneToMany(mappedBy = "permission", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "permission")

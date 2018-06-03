@@ -45,8 +45,8 @@ public class RolePermission extends GenericAuditEntity<RolePermissionPK> {
 	@EmbeddedId
 	private RolePermissionPK id;
 
-	@Column(insertable = false, updatable = false)
-	private boolean superadmin;
+	@Column(updatable = false)
+	private Boolean superadmin = false;
 
 	@ManyToOne(fetch = FetchType.EAGER, optional = true)
 	@MapsId("roleId")

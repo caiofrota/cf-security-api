@@ -45,7 +45,7 @@ public class PermissionService extends GenericService<PermissionRepository, Perm
 	public Permission save(Permission object) throws Exception {
 		if (object != null && object.getId() != null) {
 			Permission user = this.findByIdWithSuperadmin(object.getId());
-			if (user.isSuperadmin()) {
+			if (user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -56,7 +56,7 @@ public class PermissionService extends GenericService<PermissionRepository, Perm
 	public Permission save(Permission object, long id) throws Exception {
 		if (object != null && object.getId() != null) {
 			Permission user = this.findByIdWithSuperadmin(object.getId());
-			if (user.isSuperadmin()) {
+			if (user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -68,7 +68,7 @@ public class PermissionService extends GenericService<PermissionRepository, Perm
 	public void delete(Long object) throws Exception {
 		if (object != null) {
 			Permission user = this.findByIdWithSuperadmin(object);
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}

@@ -57,8 +57,8 @@ public class User extends GenericAuditEntity<Long> {
 	@NotNull
 	private boolean enabled;
 
-	@Column(insertable = false, updatable = false)
-	private boolean superadmin;
+	@Column(updatable = false)
+	private Boolean superadmin = false;
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
 	@JsonManagedReference(value = "user")

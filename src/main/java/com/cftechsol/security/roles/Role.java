@@ -42,8 +42,8 @@ public class Role extends GenericAuditEntity<Long> {
 	@NotNull
 	private String cod;
 
-	@Column(insertable = false, updatable = false)
-	private boolean superadmin;
+	@Column(updatable = false)
+	private Boolean superadmin = false;
 
 	@OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference(value = "role")

@@ -39,7 +39,7 @@ public class RolePermissionService extends GenericService<RolePermissionReposito
 	public RolePermission save(RolePermission object) throws Exception {
 		if (object != null && object.getId() != null) {
 			RolePermission rolePermission = this.findByIdWithSuperadmin(object.getId());
-			if (rolePermission != null && rolePermission.isSuperadmin()) {
+			if (rolePermission != null && rolePermission.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -50,7 +50,7 @@ public class RolePermissionService extends GenericService<RolePermissionReposito
 	public RolePermission save(RolePermission object, long id) throws Exception {
 		if (object != null && object.getId() != null) {
 			RolePermission rolePermission = this.findByIdWithSuperadmin(object.getId());
-			if (rolePermission != null && rolePermission.isSuperadmin()) {
+			if (rolePermission != null && rolePermission.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -61,7 +61,7 @@ public class RolePermissionService extends GenericService<RolePermissionReposito
 	public void delete(RolePermissionPK object) throws Exception {
 		if (object != null) {
 			RolePermission user = this.findByIdWithSuperadmin(object);
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}

@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.cftechsol.rest.exceptions.NonUniqueException;
@@ -33,29 +34,31 @@ public class RoleServiceTest {
 
 	@Test(expected = NonUniqueException.class)
 	public void codShouldBeUnique() throws Exception {
-		Role example = new Role("ADMIN", null, null);
+		Role example = new Role("ROLE_UNIQUE", null, null);
 		service.save(example);
 		service.save(example);
 	}
 
 	@Test(expected = NonUniqueException.class)
 	public void codShouldBeUniqueOnSaveAudit() throws Exception {
-		Role example = new Role("ADMIN_AUDIT", null, null);
+		Role example = new Role("ROLE_UNIQUE_AUDIT", null, null);
 		service.save(example, 1l);
 		service.save(example, 1l);
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantUpdateSuperadmin() throws Exception {
-		Role example = new Role("SUPERADMIN", null, null);
-		example.setId(1l);
+		Role example = new Role("ROLE_CANT_UPDATE_SUPERADMIN", null, null);
+		example.setSuperadmin(true);
+		this.service.save(example);
 		Assert.assertNull(service.save(example));
 	}
 
-	@Test
+	@Test(expected = AccessDeniedException.class)
 	public void cantDeleteSuperadmin() throws Exception {
-		Role object = new Role("SUPERADMIN", null, null);
-		object.setId(1l);
+		Role object = new Role("ROLE_CANT_DELETE_SUPERADMIN", null, null);
+		object.setSuperadmin(true);
+		object = this.service.save(object);
 		service.delete(object.getId());
 	}
 

@@ -39,7 +39,7 @@ public class UserRoleService extends GenericService<UserRoleRepository, UserRole
 	public UserRole save(UserRole object) throws Exception {
 		if (object != null && object.getId() != null) {
 			UserRole user = this.findByIdWithSuperadmin(object.getId());
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -50,7 +50,7 @@ public class UserRoleService extends GenericService<UserRoleRepository, UserRole
 	public UserRole save(UserRole object, long id) throws Exception {
 		if (object != null && object.getId() != null) {
 			UserRole user = this.findByIdWithSuperadmin(object.getId());
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -61,7 +61,7 @@ public class UserRoleService extends GenericService<UserRoleRepository, UserRole
 	public void delete(UserRolePK object) throws Exception {
 		if (object != null) {
 			UserRole user = this.findByIdWithSuperadmin(object);
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}

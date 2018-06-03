@@ -60,7 +60,7 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 	public User save(User object) throws Exception {
 		if (object != null && object.getId() != null) {
 			User user = this.findByIdWithSuperadmin(object.getId());
-			if (user.isSuperadmin()) {
+			if (user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -72,7 +72,7 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 	public User save(User object, long id) throws Exception {
 		if (object != null && object.getId() != null) {
 			User user = this.findByIdWithSuperadmin(object.getId());
-			if (user.isSuperadmin()) {
+			if (user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -84,7 +84,7 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 	public void delete(Long object) throws Exception {
 		if (object != null) {
 			User user = this.findByIdWithSuperadmin(object);
-			if (user != null && user.isSuperadmin()) {
+			if (user != null && user.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}

@@ -44,8 +44,8 @@ public class RoleService extends GenericService<RoleRepository, Role, Long> {
 
 	public Role save(Role object) throws Exception {
 		if (object != null && object.getId() != null) {
-			Role user = this.findByIdWithSuperadmin(object.getId());
-			if (user.isSuperadmin()) {
+			Role role = this.findByIdWithSuperadmin(object.getId());
+			if (role.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
@@ -61,8 +61,8 @@ public class RoleService extends GenericService<RoleRepository, Role, Long> {
 	@Override
 	public void delete(Long object) throws Exception {
 		if (object != null) {
-			Role user = this.findByIdWithSuperadmin(object);
-			if (user != null && user.isSuperadmin()) {
+			Role role = this.findByIdWithSuperadmin(object);
+			if (role != null && role.getSuperadmin()) {
 				throw new AccessDeniedException("Forbidden");
 			}
 		}
