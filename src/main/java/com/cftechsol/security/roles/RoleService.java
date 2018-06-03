@@ -54,6 +54,12 @@ public class RoleService extends GenericService<RoleRepository, Role, Long> {
 	}
 
 	public Role save(Role object, long id) throws Exception {
+		if (object != null && object.getId() != null) {
+			Role role = this.findByIdWithSuperadmin(object.getId());
+			if (role.getSuperadmin()) {
+				throw new AccessDeniedException("Forbidden");
+			}
+		}
 		object = prepare(object);
 		return super.save(object, id);
 	}
