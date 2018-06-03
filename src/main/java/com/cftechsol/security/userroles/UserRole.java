@@ -13,7 +13,6 @@ import javax.persistence.MapsId;
 import javax.persistence.Table;
 
 import com.cftechsol.data.entities.GenericAuditEntity;
-import com.cftechsol.security.permissions.Permission;
 import com.cftechsol.security.roles.Role;
 import com.cftechsol.security.users.User;
 import com.fasterxml.jackson.annotation.JsonBackReference;
