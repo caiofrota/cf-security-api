@@ -6,7 +6,7 @@ create table cf_tokens (
   created_on    datetime     default current_timestamp,
   primary key (token)
 )
-engine=MyISAM
+engine=InnoDB
 DEFAULT CHARSET=UTF8
 ;
 
@@ -16,6 +16,6 @@ alter table cf_tokens add constraint cf_tokens_fk1
                           references cf_users (id)
 ;
 
-alter table cf_tokens add constraint cf_users_u1
+alter table cf_tokens add constraint cf_tokens_u1
                               unique (token_refresh)
 ;

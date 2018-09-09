@@ -12,7 +12,7 @@ create table cf_users (
   password   varchar(255) not null,
   primary key (id)
 )
-engine=MyISAM
+engine=InnoDB
 DEFAULT CHARSET=UTF8
 ;
 

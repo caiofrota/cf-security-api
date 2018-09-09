@@ -9,7 +9,7 @@ create table cf_permissions (
   superadmin bit          not null default 0,
   primary key (id)
 )
-engine=MyISAM
+engine=InnoDB
 DEFAULT CHARSET=UTF8
 ;
 
