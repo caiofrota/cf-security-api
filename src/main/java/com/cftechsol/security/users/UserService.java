@@ -39,7 +39,7 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 		}
 		return object;
 	}
-	
+
 	public List<User> findAllWithSuperadmin() {
 		return super.repository.findAllWithSuperadmin();
 	}
@@ -89,6 +89,17 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 			}
 		}
 		super.delete(object);
+	}
+
+	public User changePassword(Long id, String password, Long userId) throws Exception {
+		if (password != null) {
+			User user = this.findById(id);
+			if (user != null) {
+				user.setPassword(passwordEncoder.encode(password));
+				return super.save(user, userId);
+			}
+		}
+		return null;
 	}
 
 }
