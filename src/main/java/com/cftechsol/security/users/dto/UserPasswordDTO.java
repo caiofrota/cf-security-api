@@ -13,6 +13,8 @@ public class UserPasswordDTO implements Serializable {
 
 	private Long id;
 
-	private String password;
+	private String currentPassword;
+	
+	private String newPassword;
 
 }

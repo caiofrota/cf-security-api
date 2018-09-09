@@ -40,6 +40,13 @@ public class UserServiceTest {
 		Assert.assertNotEquals(example.getPassword(), "Password");
 	}
 	
+	@Test
+	public void shouldChangePassword() throws Exception {
+		User example = service.findById(1l);
+		example = service.changePassword(example, "newPassword", example.getId());
+		Assert.assertTrue(service.checkPassword(example, "newPassword"));
+	}
+	
 	@Test(expected = ConstraintViolationException.class)
 	public void emailShouldntBeNull() throws Exception {
 		User example = new User(null, "Password", "User Name", true, null, null);

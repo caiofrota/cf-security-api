@@ -91,15 +91,13 @@ public class UserService extends GenericService<UserRepository, User, Long> {
 		super.delete(object);
 	}
 
-	public User changePassword(Long id, String password, Long userId) throws Exception {
-		if (password != null) {
-			User user = this.findById(id);
-			if (user != null) {
-				user.setPassword(passwordEncoder.encode(password));
-				return super.save(user, userId);
-			}
-		}
-		return null;
+	public User changePassword(User user, String password, Long userId) throws Exception {
+		user.setPassword(passwordEncoder.encode(password));
+		return super.save(user, userId);
+	}
+
+	public boolean checkPassword(User user, String password) {
+		return passwordEncoder.matches(password, user.getPassword());
 	}
 
 }
