@@ -1,9 +1,9 @@
 -- Insert roles
 insert into cf_roles (id, created_by, created_on, updated_by, updated_on, cod, superadmin)
               values (5, 1, now(), 1, now(), 'PERMISSIONS_MANAGER', 0),
-			         (6, 1, now(), 1, now(), 'ROLES_MANAGER', 0),
-			         (7, 1, now(), 1, now(), 'ROLE_PERMISSIONS_MANAGER', 0),
-			         (8, 1, now(), 1, now(), 'SUBSCRIBER', 0)
+                     (6, 1, now(), 1, now(), 'ROLES_MANAGER', 0),
+                     (7, 1, now(), 1, now(), 'ROLE_PERMISSIONS_MANAGER', 0),
+                     (8, 1, now(), 1, now(), 'SUBSCRIBER', 0)
 ;
 
 -- Insert role permissions
