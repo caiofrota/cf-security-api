@@ -9,10 +9,10 @@ insert into cf_roles (id, created_by, created_on, updated_by, updated_on, cod, s
 -- Insert role permissions
 insert into cf_role_permissions (created_by, created_on, updated_by, updated_on, role_id, permission_id, superadmin)
                          values (1, now(), 1, now(), 4, 3, 0),
-						        (1, now(), 1, now(), 4, 4, 0),
-						        (1, now(), 1, now(), 4, 7, 0),
-						        (1, now(), 1, now(), 5, 7, 0),
-						        (1, now(), 1, now(), 5, 16, 0),
+                                (1, now(), 1, now(), 4, 4, 0),
+                                (1, now(), 1, now(), 4, 7, 0),
+                                (1, now(), 1, now(), 5, 7, 0),
+                                (1, now(), 1, now(), 5, 16, 0),
                                 (1, now(), 1, now(), 5, 17, 0),
                                 (1, now(), 1, now(), 5, 18, 0),
                                 (1, now(), 1, now(), 5, 19, 0),
