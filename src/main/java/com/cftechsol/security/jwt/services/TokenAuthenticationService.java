@@ -18,8 +18,8 @@ import com.cftechsol.security.tokens.Token;
 import com.cftechsol.security.tokens.TokenService;
 import com.cftechsol.security.users.User;
 import com.cftechsol.security.users.UserService;
-import com.cftechsol.security.views.userauthorities.UserAuthoritesVService;
 import com.cftechsol.security.views.userauthorities.UserAuthoritiesV;
+import com.cftechsol.security.views.userauthorities.UserAuthoritiesVService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -47,7 +47,7 @@ public class TokenAuthenticationService {
 	private static TokenService tokenService;
 	private static UserService userService;
 
-	private static UserAuthoritesVService userAuthoritiesVService;
+	private static UserAuthoritiesVService userAuthoritiesVService;
 
 	public static void addAuthentication(HttpServletResponse res, String username) throws IOException {
 		try {
@@ -140,7 +140,7 @@ public class TokenAuthenticationService {
 	}
 
 	@Autowired
-	public void setUserAuthoritiesVService(UserAuthoritesVService userAuthoritiesVService) {
+	public void setUserAuthoritiesVService(UserAuthoritiesVService userAuthoritiesVService) {
 		TokenAuthenticationService.userAuthoritiesVService = userAuthoritiesVService;
 	}
 

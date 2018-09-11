@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * User authorites view repository.
+ * User authorities view repository.
  * 
  * @author Caio Frota {@literal <contact@cftechsol.com>}
  * @version 1.0.0

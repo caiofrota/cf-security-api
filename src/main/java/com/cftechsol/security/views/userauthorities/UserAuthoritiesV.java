@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
- * User authorites view entity.
+ * User authorities view entity.
  * 
  * @author Caio Frota {@literal <contact@cftechsol.com>}
  * @version 1.0.0
@@ -25,16 +25,16 @@ import lombok.Setter;
 @Table(name = "cf_user_authorities_v")
 @Immutable
 public class UserAuthoritiesV {
-	
+
 	@EmbeddedId
 	private UserAuthoritiesVPK id;
-	
+
 	@Column(name = "username", insertable = false, updatable = false)
 	private String username;
 
 	@Column(name = "authorities", insertable = false, updatable = false)
 	private String authorities;
-	
+
 	public UserAuthoritiesV(String username, String authorities) {
 		setUsername(username);
 		setAuthorities(authorities);

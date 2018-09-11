@@ -7,14 +7,14 @@ import org.springframework.stereotype.Service;
 import com.cftechsol.data.services.GenericService;
 
 /**
- * User authorites view service.
+ * User authorities view service.
  * 
  * @author Caio Frota {@literal <contact@cftechsol.com>}
  * @version 1.0.0
  * @since 1.0.0
  */
 @Service
-public class UserAuthoritesVService extends GenericService<UserAuthoritiesVRepository, UserAuthoritiesV, String> {
+public class UserAuthoritiesVService extends GenericService<UserAuthoritiesVRepository, UserAuthoritiesV, String> {
 
 	public List<UserAuthoritiesV> findByUsername(String username) {
 		return this.repository.findByUsername(username);
