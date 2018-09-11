@@ -20,6 +20,8 @@ import com.cftechsol.security.users.User;
 import com.cftechsol.security.users.UserService;
 import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesV;
 import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesVService;
+import com.cftechsol.security.views.userrolesv.UserRolesV;
+import com.cftechsol.security.views.userrolesv.UserRolesVService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -48,6 +50,7 @@ public class TokenAuthenticationService {
 	private static UserService userService;
 
 	private static UserAuthoritiesVService userAuthoritiesVService;
+	private static UserRolesVService userRolesVService;
 
 	public static void addAuthentication(HttpServletResponse res, String username) throws IOException {
 		try {
@@ -65,7 +68,7 @@ public class TokenAuthenticationService {
 				System.out.println(user.getId() + " : " + JWT);
 				Token token = new Token(JWT, user, JWTRefresh);
 				tokenService.save(token);
-				
+
 				String authorities = null;
 				for (UserAuthoritiesV userAuthority : userAuthoritiesVService.findByUsername(user.getEmail())) {
 					if (authorities == null) {
@@ -76,11 +79,23 @@ public class TokenAuthenticationService {
 					authorities += "\"" + userAuthority.getId().getAuthorities() + "\"";
 				}
 
+				String roles = null;
+				for (UserRolesV userRole : userRolesVService.findByUsername(user.getEmail())) {
+					if (roles == null) {
+						roles = "";
+					} else {
+						roles += ",";
+					}
+					roles += "\"" + userRole.getId().getRoles() + "\"";
+				}
+
 				String tokenStr = TokenAuthenticationService.TOKEN_PREFIX + " " + token.getToken();
 				res.addHeader(TokenAuthenticationService.HEADER_STRING, tokenStr);
 				res.setContentType(MediaType.APPLICATION_JSON_VALUE);
-				res.getOutputStream().print("{\"token\": \"" + token.getToken() + "\", \"tokenRefresh\": \""
-						+ token.getTokenRefresh() + "\", \"permissions\": [" + authorities + "]}");
+				res.getOutputStream()
+						.print("{\"token\": \"" + token.getToken() + "\", \"tokenRefresh\": \""
+								+ token.getTokenRefresh() + "\", \"permissions\": [" + authorities + "], \"roles\": ["
+								+ roles + "]}");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -142,6 +157,11 @@ public class TokenAuthenticationService {
 	@Autowired
 	public void setUserAuthoritiesVService(UserAuthoritiesVService userAuthoritiesVService) {
 		TokenAuthenticationService.userAuthoritiesVService = userAuthoritiesVService;
+	}
+
+	@Autowired
+	public void setUserRolesVService(UserRolesVService userRolesVService) {
+		TokenAuthenticationService.userRolesVService = userRolesVService;
 	}
 
 }
