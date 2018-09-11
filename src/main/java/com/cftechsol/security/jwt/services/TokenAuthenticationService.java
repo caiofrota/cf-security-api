@@ -18,8 +18,8 @@ import com.cftechsol.security.tokens.Token;
 import com.cftechsol.security.tokens.TokenService;
 import com.cftechsol.security.users.User;
 import com.cftechsol.security.users.UserService;
-import com.cftechsol.security.views.userauthorities.UserAuthoritiesV;
-import com.cftechsol.security.views.userauthorities.UserAuthoritiesVService;
+import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesV;
+import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesVService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

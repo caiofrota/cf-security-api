@@ -23,8 +23,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import com.cftechsol.security.users.User;
 import com.cftechsol.security.users.UserRepository;
-import com.cftechsol.security.views.userauthorities.UserAuthoritiesV;
-import com.cftechsol.security.views.userauthorities.UserAuthoritiesVRepository;
+import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesV;
+import com.cftechsol.security.views.userauthoritiesv.UserAuthoritiesVRepository;
 import com.cftechsol.security.views.usersv.UsersV;
 import com.cftechsol.security.views.usersv.UsersVRepository;
 

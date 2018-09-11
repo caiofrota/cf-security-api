@@ -1,4 +1,4 @@
-package com.cftechsol.security.views.userauthorities;
+package com.cftechsol.security.views.userauthoritiesv;
 
 import java.util.List;
 
